@@ -1,3 +1,6 @@
+// CORS proxy for handling cross-origin requests
+const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+
 async function analyzeCoin() {
     const coinAddress = document.getElementById('coin-address').value.trim();
     const resultsDiv = document.getElementById('results');
@@ -13,10 +16,10 @@ async function analyzeCoin() {
     }
 
     try {
-        // Placeholder API URLs (replace with actual APIs)
-        const rugCheckAPI = `https://rugcheck.xyz/api/check?address=${coinAddress}`;
-        const dexCheckAPI = `https://checkdex.xyz/api/check?address=${coinAddress}`;
-        const holderAnalysisAPI = `https://trench.bot/api/holders?address=${coinAddress}`;
+        // Replace these with actual APIs when available
+        const rugCheckAPI = `${corsProxy}https://rugcheck.xyz/api/check?address=${coinAddress}`;
+        const dexCheckAPI = `${corsProxy}https://checkdex.xyz/api/check?address=${coinAddress}`;
+        const holderAnalysisAPI = `${corsProxy}https://trench.bot/api/holders?address=${coinAddress}`;
 
         // Fetching Rug Check
         const rugResponse = await fetch(rugCheckAPI);
@@ -37,8 +40,12 @@ async function analyzeCoin() {
 
         resultsDiv.style.display = 'block';
     } catch (error) {
-        errorDiv.innerText = 'An error occurred while analyzing the coin. Please try again later.';
+        if (error instanceof TypeError) {
+            errorDiv.innerText = 'The API endpoint might be incorrect or down. Please check the address or try again later.';
+        } else {
+            errorDiv.innerText = 'An unexpected error occurred: ' + error.message;
+        }
         errorDiv.style.display = 'block';
-        console.error(error);
+        console.error('Error:', error);
     }
 }
